@@ -2,3 +2,4 @@ me.json
 friends.json
 node_modules/*
 npm-debug.log
+*.swp
