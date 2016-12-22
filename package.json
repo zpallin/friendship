@@ -4,7 +4,7 @@
   "description": "Distributed Systems Manager",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "/usr/bin/env nodejs friendship.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "zpallin",
