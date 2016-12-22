@@ -3,12 +3,14 @@
 
 var express = require('express');
 var app = express();
+var http = require('http');
+
+// locals
 var Friend = require('./friendship/friend.js').Friend;
 var LocalDB = require('./friendship/localdb.js').LocalDB;
 var cli = require('./friendship/cli.js');
 var state = require('./friendship/state.js');
 var helpers = require('./friendship/helpers.js');
-
 ////////////////////////////////////////////////////////////////////////////////
 // "static"
 var DEFAULT_ADDRESS = state.defaults.address;
@@ -25,6 +27,25 @@ function main() {
   var meDb = new LocalDB("me");
   var phonebook = new LocalDB("phonebook");
   var me = helpers.get_me(meDb, args);
+
+  if (helpers.isDefined(args.tell)) {
+
+    if (args.to_do === "hello") {
+    var addr = helpers.addr_from_string(args.target_friend);
+      var target = {
+        host: addr.host,
+        port: addr.port,
+        path: "/hello",
+      }
+
+      var req = http.get(target, function(res) {
+        console.log("telling " + args.target_friend + " \"hello\": " + res.statusCode);
+        res.on('data', function(chunk) {
+          console.log(String(chunk));
+        });
+      });
+    } 
+  }
 
   //if (args.hasOwnProperty("action") &&
   if (helpers.isDefined(args.listen)) {

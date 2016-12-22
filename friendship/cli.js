@@ -82,7 +82,6 @@ function get_args() {
       parser.addArgument("target_friend",
         {
           help: "target for the action [<host or address>]",
-          defaultValue: "me",
           required: false,
         }
       );
