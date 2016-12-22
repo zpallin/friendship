@@ -29,7 +29,12 @@ function main() {
   //if (args.hasOwnProperty("action") &&
   if (helpers.isDefined(args.listen)) {
     app.get('/', function (req, res) {
+      res.setHeader('Content-Type', 'application/json');
+      res.send(JSON.stringify(me.data));
+    });
 
+    app.get('/hello', function(req, res) {
+      
     });
 
     // split port from 

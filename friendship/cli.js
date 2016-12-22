@@ -27,7 +27,6 @@ function get_args() {
     {
       help: "temporarily mask the name of this friend",
       required: false,
-      defaultValue: "unnamed-" + helpers.randomStr(),
     }
   );
 
@@ -35,7 +34,6 @@ function get_args() {
     {
       help: "temporarily mask the listening address of this friend",
       required: false,
-      defaultValue: DEFAULT_ADDRESS,
     }
   );
 
@@ -43,7 +41,6 @@ function get_args() {
     {
       help: "temporarily mask the role of this friend",
       required: false,
-      defaultValue: "friend",
     }
   );
 
@@ -51,7 +48,6 @@ function get_args() {
     {
       help: "temporarily mask the role of this friend",
       required: false,
-      defaultValue: "friendship-" + helpers.randomStr(),
     }
   );
 

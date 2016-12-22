@@ -13,6 +13,7 @@
 
 var defaults = {
   address : 'localhost:8686',
+  role : 'friend',
 }
 
 module.exports = {

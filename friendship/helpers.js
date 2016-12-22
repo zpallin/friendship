@@ -18,18 +18,28 @@ function randomStr(length, seed) {
   return sha1(String((new Date()).UTC) + seed).substr(0,length);
 }
 
-function isDefined(variable) {
+function isDefined(x) {
 
-  return typeof variable !== 'undefined';
+  return (typeof x !== 'undefined' && x != null && x != "");
 }
 
 function get_me(meDb, args) {
 
   // shadow over
   var me = meDb.get();
-  var name = isDefined(args.name) ? args.name : me.name;
-  var role = isDefined(args.role) ? args.role : me.role;
-  var crowd = isDefined(args.crowd) ? args.crowd : me.crowd;
+
+  // defaults
+  var name = "friend-" + randomStr();
+  name = isDefined(me.name) ? me.name : name;
+  name = isDefined(args.name) ? args.name : name;
+  
+  var role = state.defaults.role;
+  role = isDefined(me.role) ? me.role : role;
+  role = isDefined(args.role) ? args.role : role;
+
+  var crowd = "crowd-" + randomStr();
+  crowd = isDefined(me.crowd) ? me.crowd : crowd;
+  crowd = isDefined(args.crowd) ? args.crowd : crowd;
 
   // address shadowing more complicated
   // me address is evaluated first,
@@ -38,27 +48,17 @@ function get_me(meDb, args) {
   // and lastly... if args.address === "me", then it's me.address
 
   var address = state.defaults.address;
-
-  if (isDefined(args.to_address)) {
-    if (args.to_address === "me") {
-      address = me.address;
-    } else {
-      address = args.to_address;
-    }
-  }
-  if (args.address !== state.defaults.address && isDefined(args.address)) {
-    address = args.address;
-  }
-  if (args.address === 'me' && isDefined(me.address)) {
-    address = me.address;
-  }
+  address = isDefined(me.address) ? me.address : address;
+  address = isDefined(args.address) ? args.address : address;
+  address = isDefined(args.to_address) ? args.to_address : address;
+  address = address === "me" ? me.address : address;
 
   var new_me = new Friend(name, address, role, crowd);
 
   // become clause
   if (isDefined(args.become)) {
     meDb.update(new_me);
-    console.log("Became someone new: " + JSON.stringify(new_me));
+    console.log("Became... " + JSON.stringify(new_me));
   }
 
   return new_me;
@@ -66,9 +66,16 @@ function get_me(meDb, args) {
 
 function addr_from_string(string) {
 
+  var default_split = state.defaults.address.split(':');
+
+  var addr = {
+    host: default_split[0],
+    port: default_split[1],
+  }
+
   // default return value just in case empty value
   if (typeof string === "undefined") {
-    return state.defaults.address
+    return addr;
   }
 
   var split = string.split(":");
@@ -77,28 +84,28 @@ function addr_from_string(string) {
 
     // if the value is just a single numerical value, they're trying to submit
     // just a port
-    if (isNaN(split[0])) {
-      return state.defaults.address.split(":")[0] + ":" + split[0];
+    if (!isNaN(split[0])) {
+      addr.port = split[0];
 
     // otherwise, they've passed a host address
     } else {
-      return split[0] + state.defaults.address.split(":")[1];
+      addr.host = split[0];
     }
 
   // if there are two sides, time to do input validation on whether or not they
   // threw in an empty "" at the front or back of the :
   // in that case just throw the default on whichever side makes sense
   } else {
-    if (split[0] == "") {
-      return split[0] + ":" + state.defaults.address.split(":")[1];
+    if (split[1] == "") {
+      addr.host = split[0];
 
-    } else if (split[1] == "") {
-      return state.defaults.address.split(":")[0] + ":" + split[1];
+    } else if (split[0] == "") {
+      addr.port = split[1];
     }
   }
 
   //stopping point for now
-  return string;
+  return addr;
 }
 
 module.exports = {
