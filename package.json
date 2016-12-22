@@ -2,7 +2,7 @@
   "name": "friendship",
   "version": "0.0.2",
   "description": "Distributed Systems Manager",
-  "main": "app.js",
+  "main": "friendship.js",
   "scripts": {
     "start": "/usr/bin/env nodejs friendship.js",
     "test": "echo \"Error: no test specified\" && exit 1"
