@@ -1,0 +1,21 @@
+'use strict';
+
+////////////////////////////////////////////////////////////////////////////////
+/*
+ * State
+ *  Encompases static variables and functions that manage "state"
+ */
+
+////////////////////////////////////////////////////////////////////////////////
+/*
+ * defaults
+ */
+
+var defaults = {
+  address : 'localhost:8686',
+}
+
+module.exports = {
+  defaults : defaults,
+}
+
