@@ -3,9 +3,6 @@
 
 var express = require('express');
 var app = express();
-var fs = require('fs');
-var merge = require('merge');
-var sha1 = require('sha1');
 var Friend = require('./friendship/friend.js').Friend;
 var LocalDB = require('./friendship/localdb.js').LocalDB;
 var cli = require('./friendship/cli.js');
