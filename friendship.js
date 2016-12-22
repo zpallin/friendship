@@ -28,16 +28,25 @@ function main() {
 
   //if (args.hasOwnProperty("action") &&
   if (helpers.isDefined(args.listen)) {
+
+    // Friendship!
     app.get('/', function (req, res) {
-      res.setHeader('Content-Type', 'application/json');
-      res.send(JSON.stringify(me.data));
+      res.send("Friendship?");
     });
 
+    // how to greet a node. It tells you who it is!
+    // I mean, why not? It's early stage development. 
+    // pffft... No need for security!
     app.get('/hello', function(req, res) {
       
+      var data = me.data;
+      data.message = "Hello! This is me!";
+
+      res.setHeader('Content-Type', 'application/json');
+      res.send(JSON.stringify(data));
     });
 
-    // split port from 
+    // get addr object and push some data
     var addr = helpers.addr_from_string(me.address);
     app.listen(addr.port, addr.host, function () {
 
