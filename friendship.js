@@ -6,11 +6,17 @@ var app = express();
 var fs = require('fs');
 var merge = require('merge');
 var ArgumentParser = require('argparse').ArgumentParser;
+var sha1 = require('sha1');
+
+
+////////////////////////////////////////////////////////////////////////////////
+// "static"
 var DEFAULT_ADDRESS = "localhost:8686";
 
 ////////////////////////////////////////////////////////////////////////////////
 /*
- * Objects
+ * Friend
+ *  object used to manage friend data
  */
 
 class Friend {
@@ -31,7 +37,12 @@ class Friend {
   }
 }
 
-// stores local db of json
+////////////////////////////////////////////////////////////////////////////////
+/*
+ * LocalDB
+ *  stores json data in a json file
+ */
+
 class LocalDB {
   
   constructor(name, path, overwrite) {
@@ -52,7 +63,7 @@ class LocalDB {
   // updates data with object merge 
   update(data) {
 
-    var new_data = merge(data, this.get());    
+    var new_data = merge(this.get(), data);
     fs.writeFileSync(this.fullpath, JSON.stringify(new_data, null, 4));
   }
 
@@ -89,6 +100,7 @@ function get_args() {
     {
       help: "temporarily mask the name of this friend",
       required: false,
+      defaultValue: "unnamed-" + sha1(String((new Date()).UTC)).substr(0,10),
     }
   );
 
@@ -104,6 +116,7 @@ function get_args() {
     {
       help: "temporarily mask the role of this friend",
       required: false,
+      defaultValue: "friend",
     }
   );
 
@@ -174,37 +187,81 @@ function get_args() {
  * helpers
  */
 
+function isDefined(variable) {
+  return typeof variable !== 'undefined';
+}
+
 function get_me(meDb, args) {
   
   // shadow over
   var me = meDb.get();
-  var name = args.name ? args.name : me.name;
-  var role = args.role ? args.role : me.role;
+  var name = isDefined(args.name) ? args.name : me.name;
+  var role = isDefined(args.role) ? args.role : me.role;
 
   // address shadowing more complicated
   // me address is evaluated first,
   // then if listen_to is set...
   // then, if args.address isn't default
   // and lastly... if args.address === "me", then it's me.address
-  var address = args.listen_to ? args.listen_to : me.address;
-  address = args.address != DEFAULT_ADDRESS ? args.address : address;
-  address = args.address === "me" ? me.address : address;
 
+  var address = DEFAULT_ADDRESS;
+  if (isDefined(args.to_address)) {
+    address = args.to_address;
+  }
+  if (args.address !== DEFAULT_ADDRESS && isDefined(args.address)) {
+    address = args.address;
+  }
+  if (args.address === 'me' && isDefined(me.address)) {
+    address = me.address;
+  }
+
+/*
+  var address = typeof args.listen_to !== 'undefined' ? args.listen_to : me.address;
+  address = args.address != DEFAULT_ADDRESS ? args.address : address;
+  address = args.address === "me" && typeof args.address !== 'undefined' ? me.address : address;
+*/
   var new_me = new Friend(name, address, role);
 
   // become clause
-  if (args.become) {
+  if (isDefined(args.become)) {
     meDb.update(new_me);
+    console.log("Became someone new: " + JSON.stringify(new_me));
   }
 
   return new_me;
 }
 
 function addr_from_string(string) {
+
+  // default return value just in case empty value
+  if (typeof string === "undefined") {
+    return DEFAULT_ADDRESS
+  }
+
   var split = string.split(":");
 
-  if (split.length > 1) {
-     
+  if (split.length === 1) {
+    
+    // if the value is just a single numerical value, they're trying to submit
+    // just a port
+    if (isNaN(split[0])) {
+      return DEFAULT_ADDRESS.split(":")[0] + ":" + split[0];
+
+    // otherwise, they've passed a host address
+    } else {
+      return split[0] + DEFAULT_ADDRESS.split(":")[1];
+    }
+
+  // if there are two sides, time to do input validation on whether or not they
+  // threw in an empty "" at the front or back of the :
+  // in that case just throw the default on whichever side makes sense
+  } else {
+    if (split[0] == "") {
+      return split[0] + ":" + DEFAULT_ADDRESS.split(":")[1];
+
+    } else if (split[1] == "") {
+      return DEFAULT_ADDRESS.split(":")[0] + ":" + split[1];
+    }
   }
 
   //stopping point for now
@@ -225,7 +282,7 @@ function main() {
   var me = get_me(meDb, args);
 
   //if (args.hasOwnProperty("action") &&
-  if (typeof args.listen !== "undefined") {
+  if (isDefined(args.listen)) {
     app.get('/', function (req, res) {
 
     });
@@ -237,7 +294,7 @@ function main() {
       meDb.update(me.data);
 
       console.log("Listening on " + me.address);
-      console.log(me);
+      //console.log(me);
     });
   }
 }
