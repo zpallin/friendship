@@ -7,76 +7,12 @@ var fs = require('fs');
 var merge = require('merge');
 var ArgumentParser = require('argparse').ArgumentParser;
 var sha1 = require('sha1');
-
+var Friend = require('./friendship/friend.js').Friend;
+var LocalDB = require('./friendship/localdb.js').LocalDB;
 
 ////////////////////////////////////////////////////////////////////////////////
 // "static"
 var DEFAULT_ADDRESS = "localhost:8686";
-
-////////////////////////////////////////////////////////////////////////////////
-/*
- * Friend
- *  object used to manage friend data
- */
-
-class Friend {
-  constructor(name, address, role) {
-
-    this.name = name;
-    this.address = address;
-    this.role = role;
-  }
-
-  get data() {
-
-    return {
-      name: this.name,
-      address: this.address,
-      role: this.role,
-    };
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-/*
- * LocalDB
- *  stores json data in a json file
- */
-
-class LocalDB {
-  
-  constructor(name, path, overwrite) {
-
-    // overwrite existing file option, import by default
-    overwrite = typeof overwrite === "undefined" ? false : true;
-
-    this.path = typeof path === "undefined" ? "." : path;
-    this.name = name;
-    this.fullpath = this.path + "/" + this.name + ".json";
-
-    // overwrites file if it does not exist or overwrite stated
-    if (fs.existsSync(this.fullpath) === false || overwrite === true) {
-      fs.writeFileSync(this.fullpath, JSON.stringify({}, null, 4));
-    }
-  }
-  
-  // updates data with object merge 
-  update(data) {
-
-    var new_data = merge(this.get(), data);
-    fs.writeFileSync(this.fullpath, JSON.stringify(new_data, null, 4));
-  }
-
-  consider(data) {
-
-  }
-
-  // returns the json as object
-  get() {
-
-    return JSON.parse(fs.readFileSync(this.fullpath));
-  }
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 /*
@@ -100,7 +36,7 @@ function get_args() {
     {
       help: "temporarily mask the name of this friend",
       required: false,
-      defaultValue: "unnamed-" + sha1(String((new Date()).UTC)).substr(0,10),
+      defaultValue: "unnamed-" + randomStr(),
     }
   );
 
@@ -117,6 +53,14 @@ function get_args() {
       help: "temporarily mask the role of this friend",
       required: false,
       defaultValue: "friend",
+    }
+  );
+
+  parser.addArgument(["-w", "--crowd"],
+    {
+      help: "temporarily mask the role of this friend",
+      required: false,
+      defaultValue: "friendship-" + randomStr(),
     }
   );
 
@@ -187,7 +131,16 @@ function get_args() {
  * helpers
  */
 
+function randomStr(length, seed) {
+
+  length = isDefined(length) ? length : 10;
+  seed = isDefined(seed) ? seed : sha1("Zeppelin");
+
+  return sha1(String((new Date()).UTC) + seed).substr(0,length);
+}
+
 function isDefined(variable) {
+
   return typeof variable !== 'undefined';
 }
 
@@ -197,6 +150,7 @@ function get_me(meDb, args) {
   var me = meDb.get();
   var name = isDefined(args.name) ? args.name : me.name;
   var role = isDefined(args.role) ? args.role : me.role;
+  var crowd = isDefined(args.crowd) ? args.crowd : me.crowd;
 
   // address shadowing more complicated
   // me address is evaluated first,
@@ -205,8 +159,13 @@ function get_me(meDb, args) {
   // and lastly... if args.address === "me", then it's me.address
 
   var address = DEFAULT_ADDRESS;
+
   if (isDefined(args.to_address)) {
-    address = args.to_address;
+    if (args.to_address === "me") {
+      address = me.address;
+    } else {
+      address = args.to_address;
+    }
   }
   if (args.address !== DEFAULT_ADDRESS && isDefined(args.address)) {
     address = args.address;
@@ -215,12 +174,7 @@ function get_me(meDb, args) {
     address = me.address;
   }
 
-/*
-  var address = typeof args.listen_to !== 'undefined' ? args.listen_to : me.address;
-  address = args.address != DEFAULT_ADDRESS ? args.address : address;
-  address = args.address === "me" && typeof args.address !== 'undefined' ? me.address : address;
-*/
-  var new_me = new Friend(name, address, role);
+  var new_me = new Friend(name, address, role, crowd);
 
   // become clause
   if (isDefined(args.become)) {
@@ -278,7 +232,7 @@ function main() {
 
   var args = get_args();
   var meDb = new LocalDB("me");
-  var friendsDb = new LocalDB("friends");
+  var phonebook = new LocalDB("phonebook");
   var me = get_me(meDb, args);
 
   //if (args.hasOwnProperty("action") &&
