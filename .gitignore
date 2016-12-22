@@ -1,5 +1,5 @@
 me.json
-friends.json
+phonebook.json
 node_modules/*
 npm-debug.log
 *.swp
