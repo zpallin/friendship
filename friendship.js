@@ -44,6 +44,7 @@ function main() {
 
       res.setHeader('Content-Type', 'application/json');
       res.send(JSON.stringify(data));
+      console.log("I was just greeted by " + req.connection.remoteAddress + "!");
     });
 
     // get addr object and push some data
