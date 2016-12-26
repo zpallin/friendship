@@ -3,7 +3,6 @@
  * Friend
  *  object used to manage friend data
  */
-const path = require('path');
 
 class Friend {
   constructor(name, address, role, crowd, config) {
@@ -16,7 +15,6 @@ class Friend {
     
     // unshared config values
     this.config = {};
-    this.config.dir = path.resolve("./");
 
     // set config if config is declared and is an object
     if (typeof config === 'object') {

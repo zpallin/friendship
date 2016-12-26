@@ -25,7 +25,8 @@ function main() {
   console.log("Friendship!");
 
   var args = cli.get_args();
-  var meDb = new LocalDB("me", args.path);
+  var path = args.path === null ? "./" : args.path;
+  var meDb = new LocalDB("me", path);
   var phonebook = new LocalDB("phonebook");
   var me = helpers.get_me(meDb, args);
 
@@ -80,11 +81,11 @@ function main() {
     // pffft... No need for security!
     app.get('/hello', function(req, res) {
       
-      var data = me.data;
-      data.message = "Hello! This is me!";
+      var obj = me.obj;
+      obj.message = "Hello! This is me!";
 
       res.setHeader('Content-Type', 'application/json');
-      res.send(JSON.stringify(data));
+      res.send(JSON.stringify(obj));
       console.log("I was just greeted by " + req.connection.remoteAddress + "!");
     });
 
@@ -92,10 +93,9 @@ function main() {
     var addr = helpers.addr_from_string(me.address);
     app.listen(addr.port, addr.host, function () {
 
-      meDb.update(me.data);
+      meDb.update(me.obj);
 
       console.log("Listening on " + me.address);
-      //console.log(me);
     });
   }
 }

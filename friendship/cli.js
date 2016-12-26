@@ -69,7 +69,14 @@ function get_args() {
       dest: "local_config",
       help: "temporarily mask local-config values (<name>:<value>,<name>:<value>...)",
       required: false,
-      defaultValue: "",
+    }
+  );
+
+  parser.addArgument(["-p", "--path"],
+    {
+      dest: "path",
+      help: "choose which management path to use -- aka where me.json lives",
+      required: false,
     }
   );
 
