@@ -4,6 +4,19 @@ var ArgumentParser = require('argparse').ArgumentParser;
 var state = require('./state.js');
 var helpers = require('./helpers.js');
 var DEFAULT_ADDRESS = state.defaults.address;
+////////////////////////////////////////////////////////////////////////////////
+/*
+ * Help Sections
+ *  shared to allow for printing help data
+ */
+
+var help_sections = {
+  "listen": "listens as service to <address | host> for friends",
+  "tell": "gives a command to a target friend <name | group | address>",
+  "become": "overwrites local configuration with masking flags",
+  "config": "displays all local configuration on stdout",
+  "actions": "displays help text for all actions on stdout",
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 /*
@@ -51,11 +64,13 @@ function get_args() {
     }
   );
 
+  // for consistency, store help sections for actions in a hash
+  // so that we can reuse them when we want to print them all out
   switch(process.argv[2]) {
     case "listen":
       parser.addArgument("listen",
         {
-          help: "friend will listen as service to <address | host>",
+          help: help_sections['listen'],
         }
       );
 
@@ -76,7 +91,7 @@ function get_args() {
     case "tell":
       parser.addArgument("tell",
         {
-          help: "gives a command to a friend",
+          help: help_sections['tell'], 
         }
       );
       parser.addArgument("target_friend",
@@ -95,7 +110,23 @@ function get_args() {
     case "become":
       parser.addArgument("become",
         {
-          help: "permanently remember masking flags",
+          help: help_sections['become'], 
+        }
+      );
+      break;
+
+    case "config":
+      parser.addArgument("config",
+        {
+          help: help_sections['config'] 
+        }
+      );
+      break;
+
+    case "actions":
+      parser.addArgument("actions",
+        {
+          help: help_sections['actions'], 
         }
       );
       break;
@@ -103,7 +134,7 @@ function get_args() {
     default:
       parser.addArgument("action",
         {
-          help: "`friendship <listen | tell | become> -h` for details",
+          help: "run `friendship actions` to learn more",
           required: false,
         }
       );
@@ -113,5 +144,6 @@ function get_args() {
 }
 
 module.exports = {
-	get_args: get_args
+	get_args: get_args,
+  help_sections: help_sections,
 }

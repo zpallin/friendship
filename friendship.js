@@ -28,8 +28,28 @@ function main() {
   var phonebook = new LocalDB("phonebook");
   var me = helpers.get_me(meDb, args);
 
-  if (helpers.isDefined(args.tell)) {
+  // print out configuration
+  if (helpers.isDefined(args.config)) {
+    console.log("Data: ");
+    console.log(JSON.stringify(me.data, null, 4));
+    console.log("Config: ");
+    console.log(JSON.stringify(me.config, null, 4));
+  }
 
+  // print out actions help messages
+  if (helpers.isDefined(args.actions)) {
+    console.log("Actions: ");
+    for (var a in cli.help_sections) {
+      console.log(" - \"" + a + "\": " + cli.help_sections[a]);
+    }
+    console.log("\nRun \"--help\" with each action to learn more");
+  }
+
+  if (helpers.isDefined(args.tell)) {
+    
+    /*
+     * entrypoint for running tell arguments
+     */
     if (args.to_do === "hello") {
     var addr = helpers.addr_from_string(args.target_friend);
       var target = {
