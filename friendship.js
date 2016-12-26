@@ -21,23 +21,23 @@ var DEFAULT_ADDRESS = state.defaults.address;
  */
 
 function main() {
+  
   console.log("Friendship!");
 
   var args = cli.get_args();
-  var meDb = new LocalDB("me");
+  var meDb = new LocalDB("me", args.path);
   var phonebook = new LocalDB("phonebook");
   var me = helpers.get_me(meDb, args);
 
   // print out configuration
   if (helpers.isDefined(args.config)) {
-    console.log("Data: ");
-    console.log(JSON.stringify(me.data, null, 4));
-    console.log("Config: ");
-    console.log(JSON.stringify(me.config, null, 4));
+
+    console.log(JSON.stringify(me.obj, null, 4));
   }
 
   // print out actions help messages
   if (helpers.isDefined(args.actions)) {
+
     console.log("Actions: ");
     for (var a in cli.help_sections) {
       console.log(" - \"" + a + "\": " + cli.help_sections[a]);
@@ -56,7 +56,7 @@ function main() {
         host: addr.host,
         port: addr.port,
         path: "/hello",
-      }
+      };
 
       var req = http.get(target, function(res) {
         console.log("telling " + args.target_friend + " \"hello\": " + res.statusCode);

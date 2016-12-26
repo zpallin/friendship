@@ -53,7 +53,27 @@ function get_me(meDb, args) {
   address = isDefined(args.to_address) ? args.to_address : address;
   address = address === "me" ? me.address : address;
 
-  var new_me = new Friend(name, address, role, crowd);
+
+  // now for local_config. We must loop through passed config arguments
+  // since config defaults are handled inside of the friend object
+  // we don't have to worry about them
+  var local_configs = me.config;
+  if (args.local_config !== "") {
+
+    // for ergonomics, this little map parses a string of k:v's into an array
+    // of k:v objects 
+    var configs = args.local_config.split(',').map(function(x) {
+      var y = x.split(':');
+      return { k: y[0], v: y[1] };
+    });
+
+    for (var c in configs) {
+      var conf = configs[c];
+      local_configs[conf.k] = conf.v;
+    }
+  }
+  
+  var new_me = new Friend(name, address, role, crowd, local_configs);
 
   // become clause
   if (isDefined(args.become)) {

@@ -64,6 +64,15 @@ function get_args() {
     }
   );
 
+  parser.addArgument(["-c", "--local-config"],
+    {
+      dest: "local_config",
+      help: "temporarily mask local-config values (<name>:<value>,<name>:<value>...)",
+      required: false,
+      defaultValue: "",
+    }
+  );
+
   // for consistency, store help sections for actions in a hash
   // so that we can reuse them when we want to print them all out
   switch(process.argv[2]) {
