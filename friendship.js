@@ -35,6 +35,8 @@ function main() {
   var phonebook = new LocalDB("phonebook", path);
   var me = helpers.get_me(meDb, args);
 
+  // setup phonebook
+
   // print out configuration
   if (helpers.isDefined(args.config)) {
 
@@ -58,11 +60,16 @@ function main() {
      */
     if (args.to_do === "hello") {
       var addr = helpers.addr_from_string(args.target_friend);
-      var sendData = JSON.stringify(me.obj);
+      var sendData = JSON.stringify(me.data);
 
       sa.post(addr.host + ":" + addr.port + "/hello")
-        .send(me.obj)
+        .send(me.data)
         .end(function(err, res) {
+          if (err !== null) {
+            console.log(err);
+          } else {
+            console.log(res.body);
+          }
         });
     } 
   }
@@ -80,11 +87,11 @@ function main() {
     // pffft... No need for security!
     app.post('/hello', function(req, res) {
 
-      var obj = me.obj;
-      obj.message = "Hello! This is me!";
+      var data = me.data;
+      data.message = "Hello! This is me!";
 
       res.setHeader('Content-Type', 'application/json');
-      res.send(JSON.stringify(obj));
+      res.send(JSON.stringify(data));
       console.log("I was just greeted by " + req.body.name + "!");
     });
 
@@ -93,7 +100,6 @@ function main() {
     app.listen(addr.port, addr.host, function () {
 
       meDb.update(me.obj);
-
       console.log("Listening on " + me.address);
     });
   }

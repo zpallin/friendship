@@ -26,15 +26,21 @@ class Friend {
     }
   }
 
-  get obj() {
+  get data() {
 
     return {
       name: this.name,
       address: this.address,
       role: this.role,
       crowd: this.crowd,
-      config: this.config,
     };
+  }
+
+  get obj() {
+
+    var obj = this.data;
+    obj.config = this.config;
+    return obj;
   }
 
 
