@@ -11,10 +11,12 @@
   "license": "GPL-3.0",
   "dependencies": {
     "argparse": "^1.0.9",
+    "body-parser": "^1.15.2",
     "express": "^4.14.0",
     "http": "0.0.0",
     "merge": "^1.2.0",
     "node-json-db": "^0.7.3",
-    "sha1": "^1.1.1"
+    "sha1": "^1.1.1",
+    "superagent": "^3.3.1"
   }
 }

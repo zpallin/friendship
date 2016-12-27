@@ -10,6 +10,10 @@ var Friend = require('./friend.js').Friend;
  *  helping everyone with simple functional scripts!
  */
 
+function clone(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
 function randomStr(length, seed) {
 
   length = isDefined(length) ? length : 10;
@@ -132,4 +136,5 @@ module.exports = {
 	isDefined : isDefined,
 	get_me : get_me,
 	addr_from_string : addr_from_string,
+  clone : clone,
 }

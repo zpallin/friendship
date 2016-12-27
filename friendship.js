@@ -2,8 +2,13 @@
 'use strict';
 
 var express = require('express');
-var app = express();
+var bodyParser = require('body-parser');
 var http = require('http');
+var sa  = require('superagent');
+var app = express();
+
+// app uses
+app.use(bodyParser.json());
 
 // locals
 var Friend = require('./friendship/friend.js').Friend;
@@ -21,13 +26,13 @@ var DEFAULT_ADDRESS = state.defaults.address;
  */
 
 function main() {
-  
+
   console.log("Friendship!");
 
   var args = cli.get_args();
   var path = args.path === null ? "./" : args.path;
   var meDb = new LocalDB("me", path);
-  var phonebook = new LocalDB("phonebook");
+  var phonebook = new LocalDB("phonebook", path);
   var me = helpers.get_me(meDb, args);
 
   // print out configuration
@@ -47,24 +52,18 @@ function main() {
   }
 
   if (helpers.isDefined(args.tell)) {
-    
+
     /*
      * entrypoint for running tell arguments
      */
     if (args.to_do === "hello") {
-    var addr = helpers.addr_from_string(args.target_friend);
-      var target = {
-        host: addr.host,
-        port: addr.port,
-        path: "/hello",
-      };
+      var addr = helpers.addr_from_string(args.target_friend);
+      var sendData = JSON.stringify(me.obj);
 
-      var req = http.get(target, function(res) {
-        console.log("telling " + args.target_friend + " \"hello\": " + res.statusCode);
-        res.on('data', function(chunk) {
-          console.log(String(chunk));
+      sa.post(addr.host + ":" + addr.port + "/hello")
+        .send(me.obj)
+        .end(function(err, res) {
         });
-      });
     } 
   }
 
@@ -79,14 +78,14 @@ function main() {
     // how to greet a node. It tells you who it is!
     // I mean, why not? It's early stage development. 
     // pffft... No need for security!
-    app.get('/hello', function(req, res) {
-      
+    app.post('/hello', function(req, res) {
+
       var obj = me.obj;
       obj.message = "Hello! This is me!";
 
       res.setHeader('Content-Type', 'application/json');
       res.send(JSON.stringify(obj));
-      console.log("I was just greeted by " + req.connection.remoteAddress + "!");
+      console.log("I was just greeted by " + req.body.name + "!");
     });
 
     // get addr object and push some data
