@@ -33,6 +33,7 @@ class LocalDB {
     fs.writeFileSync(this.fullpath, JSON.stringify(new_data, null, 4));
   }
 
+  // not sure what this is yet but I had an idea. it'll come to me soonish
   consider(data) {
 
   }

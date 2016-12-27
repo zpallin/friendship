@@ -43,6 +43,17 @@ class Friend {
     return obj;
   }
 
+  sameAs(friend) {
+    var attrs = ['name','address','role','crowd'];
+    for (var i in attrs) {
+      var a = attrs[i];
+      if (this[a] !== friend[a]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
 
 }
 

@@ -35,8 +35,6 @@ function main() {
   var phonebook = new LocalDB("phonebook", path);
   var me = helpers.get_me(meDb, args);
 
-  // setup phonebook
-
   // print out configuration
   if (helpers.isDefined(args.config)) {
 
@@ -59,6 +57,7 @@ function main() {
      * entrypoint for running tell arguments
      */
     if (args.to_do === "hello") {
+
       var addr = helpers.addr_from_string(args.target_friend);
       var sendData = JSON.stringify(me.data);
 
@@ -92,7 +91,32 @@ function main() {
 
       res.setHeader('Content-Type', 'application/json');
       res.send(JSON.stringify(data));
-      console.log("I was just greeted by " + req.body.name + "!");
+
+      var greeter = new Friend(
+        req.body.name, 
+        req.body.address, 
+        req.body.role, 
+        req.body.crowd
+      );
+
+      var greetName = greeter.name;
+
+      if (greeter.sameAs(me)) {
+        greetName = "myself";
+      } else {
+        var phoneData = phonebook.get();
+        
+        for (var i in phoneData.friends) {
+          var friend = phoneData.friends[i];
+          // WORK HERE
+          // this right now is in development. It will evaluate whether or not
+          // the friend is a new friend or just being updated... no logic yet
+        }
+        phonebook.update({"friends": [greeter]});
+      }
+
+      console.log("I was just greeted by " + greetName + "!");
+
     });
 
     // get addr object and push some data
