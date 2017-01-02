@@ -26,6 +26,12 @@ class Friend {
     }
   }
 
+  _default_config() {
+    //returns default configurations, which subsequently limit
+    //which configurations can be passed via input filtering
+    return {} // empty for now :(
+  }
+
   get data() {
 
     return {

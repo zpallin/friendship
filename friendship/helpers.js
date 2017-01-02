@@ -90,19 +90,19 @@ function get_me(meDb, args) {
 function addr_from_string(string) {
 
   var default_split = state.defaults.address.split(':');
-
+  
   var addr = {
     host: default_split[0],
     port: default_split[1],
   }
-
+  
   // default return value just in case empty value
   if (typeof string === "undefined") {
     return addr;
   }
 
   var split = string.split(":");
-
+  
   if (split.length === 1) {
 
     // if the value is just a single numerical value, they're trying to submit
@@ -119,10 +119,14 @@ function addr_from_string(string) {
   // threw in an empty "" at the front or back of the :
   // in that case just throw the default on whichever side makes sense
   } else {
-    if (split[1] == "") {
+    if (split[1] === "") {
       addr.host = split[0];
 
-    } else if (split[0] == "") {
+    } else if (split[0] === "") {
+      addr.port = split[1];
+
+    } else {
+      addr.host = split[0];
       addr.port = split[1];
     }
   }

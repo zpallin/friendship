@@ -29,7 +29,7 @@ Roles are how we know friends are supposed to interact with one another.
 
 | Type    | Description                                       | Works? |
 | ------- | ------------------------------------------------- | ------ |
-| Friend  | A "basic" friend that oes whatever it's told      | Yes... |
+| Friend  | A "basic" friend that does whatever it's told     | Yes... |
 | Popular | Contains data, and everyone wants to know them    | No     | 
 | Bully   | Always pushing other friends around (admin)       | No     |
 | Gossip  | Runs a website with monitoring data               | No     |

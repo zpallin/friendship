@@ -1,7 +1,8 @@
 'use strict';
 
-var fs = require('fs');
-var merge = require('merge');
+const fs = require('fs');
+const merge = require('merge');
+const path = require('path');
 
 ////////////////////////////////////////////////////////////////////////////////
 /*
@@ -11,14 +12,17 @@ var merge = require('merge');
 
 class LocalDB {
 
-  constructor(name, path, overwrite) {
+  constructor(name, filepath, overwrite) {
+
+    // executable path of program
+    var exe_path = path.dirname(process.mainModule.filename);
 
     // overwrite existing file option, import by default
-    overwrite = typeof overwrite === "undefined" ? false : true;
-
-    this.path = typeof path === "undefined" ? "." : path;
-    this.name = name;
-    this.fullpath = this.path + "/" + this.name + ".json";
+    overwrite = typeof overwrite === 'undefined' ? false : true;
+    
+    this.filepath = typeof filepath === 'undefined' ? exe_path : filepath;
+    this.name = typeof name === 'undefined' ? 'db' : name;
+    this.fullpath = this.filepath + '/' + this.name + '.json';
 
     // overwrites file if it does not exist or overwrite stated
     if (fs.existsSync(this.fullpath) === false || overwrite === true) {

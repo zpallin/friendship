@@ -4,8 +4,9 @@
   "description": "Distributed Systems Manager",
   "main": "friendship.js",
   "scripts": {
-    "start": "/usr/bin/env nodejs friendship.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "/usr/bin/env node friendship.js",
+    "test": "npm run test-unit",
+    "test-unit": "NODE_ENV=test ./node_modules/mocha/bin/mocha './tests/*.spec.js'"
   },
   "author": "zpallin",
   "license": "GPL-3.0",
