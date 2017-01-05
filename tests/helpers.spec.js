@@ -58,5 +58,52 @@ describe('helpers', function() {
       assert.isTrue(helpers.isDefined(val2));
     });
   });
+
+  describe('addr_from_string', function() {
+    it('converts string to addr object with "host" and "port" as attr', function() {
+      var exp_addr = {
+        host: 'test',
+        port: '9001',
+      };
+
+      var addr = helpers.addr_from_string('test:9001');
+
+      assert.equal(exp_addr.host, addr.host);
+      assert.equal(exp_addr.port, addr.port);
+    });
+
+    it('provides default port when not provided', function() {
+      var exp_addr = {
+        host: 'test',
+        port: '8686',
+      };
+
+      var addr = helpers.addr_from_string('test');
+
+      assert.equal(exp_addr.host, addr.host);
+      assert.equal(exp_addr.port, addr.port);
+
+      addr = helpers.addr_from_string('test:');
+    
+      assert.equal(exp_addr.host, addr.host);
+      assert.equal(exp_addr.port, addr.port);
+    });
+
+    it('provides default host when not provided', function() {
+      var exp_addr = {
+        host: 'localhost',
+        port: '8787',
+      };
+      var addr = helpers.addr_from_string('8787');
+      assert.equal(exp_addr.host, addr.host);
+      assert.equal(exp_addr.port, addr.port);
+  
+      addr = helpers.addr_from_string(':8787');
+      assert.equal(exp_addr.host, addr.host);
+      assert.equal(exp_addr.port, addr.port);
+
+    });
+  });
+
 });
 
