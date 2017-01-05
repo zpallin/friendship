@@ -105,5 +105,58 @@ describe('helpers', function() {
     });
   });
 
+  describe('get_me', function() {
+    it('returns an empty friend if no DB is passed', function() {
+      function Friend() {
+        this.name = undefined;
+        this.address = undefined;
+        this.role = undefined;
+        this.crowd = undefined;
+        this.config = {};
+      }
+      var me = helpers.get_me();
+      assert.equal(JSON.stringify(new Friend()), JSON.stringify(me));
+    });
+    
+    // localdb spoofing for other tests...
+    var localdbSpoof = {};
+    localdbSpoof.get = function() { return {}; }
+    localdbSpoof.update = function(data) {
+      // nothing?
+    }
+ 
+    it('returns the data from the db as a Friend object', function() {
+      function Friend() {
+        this.name = 'friend1';
+        this.address = 'localhost:8686';
+        this.role = 'friend';
+        this.crowd = 'testcrowd';
+        this.config = {};
+      }
+
+      localdbSpoof.get = function() {
+        return {
+          name: 'friend1',
+          role: 'friend',
+          crowd: 'testcrowd',
+          address: 'localhost:8686',
+        };
+      };
+
+      var exp_me = new Friend();
+      var me = helpers.get_me(localdbSpoof, {});
+      assert.equal(JSON.stringify(exp_me), JSON.stringify(me)); 
+    });
+
+    it('returns defaults from state if no db returns no data', function() {
+      localdbSpoof.get = function() { return {}; };
+      var me  = helpers.get_me(localdbSpoof,{});
+      assert.match(me.name, /friend*/, 'matches name generation default');
+      assert.match(me.crowd, /crowd*/, 'matches crowd name generation default');
+      assert.equal(me.role, 'friend');
+      assert.equal(me.address, 'localhost:8686');
+    });
+    
+  });
 });
 

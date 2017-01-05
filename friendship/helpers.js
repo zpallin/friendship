@@ -29,6 +29,11 @@ function isDefined(x) {
 
 function get_me(meDb, args) {
 
+  // if no db is supplied, just return an empty friend
+  if (!isDefined(meDb)) {
+    return new Friend();
+  }
+
   // shadow over
   var me = meDb.get();
 
@@ -61,7 +66,7 @@ function get_me(meDb, args) {
   // since config defaults are handled inside of the friend object
   // we don't have to worry about them
   var local_configs = me.config;
-  if (args.local_config !== null) {
+  if (args.local_config !== undefined && args.local_config !== null) {
 
     // for ergonomics, this little map parses a string of k:v's into an array
     // of k:v objects 
