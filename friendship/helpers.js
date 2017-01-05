@@ -19,7 +19,7 @@ function randomStr(length, seed) {
   length = isDefined(length) ? length : 10;
   seed = isDefined(seed) ? seed : sha1("Zeppelin");
 
-  return sha1(String((new Date()).UTC) + seed).substr(0,length);
+  return sha1(String(new Date()) + ' ' + seed).substr(0,length);
 }
 
 function isDefined(x) {
