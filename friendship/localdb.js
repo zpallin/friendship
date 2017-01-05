@@ -1,8 +1,8 @@
 'use strict';
 
-const fs = require('fs');
-const merge = require('merge');
-const path = require('path');
+var fs = require('fs');
+var merge = require('merge');
+var path = require('path');
 
 ////////////////////////////////////////////////////////////////////////////////
 /*
@@ -34,12 +34,7 @@ class LocalDB {
   update(data) {
 
     var new_data = merge(this.get(), data);
-    fs.writeFileSync(this.fullpath, JSON.stringify(new_data, null, 4));
-  }
-
-  // not sure what this is yet but I had an idea. it'll come to me soonish
-  consider(data) {
-
+    return fs.writeFileSync(this.fullpath, JSON.stringify(new_data, null, 4));
   }
 
   // returns the json as object
