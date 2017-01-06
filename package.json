@@ -6,7 +6,7 @@
   "scripts": {
     "start": "/usr/bin/env node friendship.js",
     "test": "npm run test-unit",
-    "test-unit": "NODE_ENV=test ./node_modules/mocha/bin/mocha './tests/*.spec.js'"
+    "test-unit": "NODE_ENV=test ./node_modules/mocha/bin/mocha './test/*.spec.js'"
   },
   "author": "zpallin",
   "license": "GPL-3.0",
@@ -23,5 +23,10 @@
     "sha1": "^1.1.1",
     "sinon": "^1.17.7",
     "superagent": "^3.3.1"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.2.0"
   }
 }
