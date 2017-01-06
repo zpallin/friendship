@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/zpallin/friendship.svg?branch=master)](https://travis-ci.org/zpallin/friendship)
+
 # Friendship!
 
 Friendship is a distributed systems administration tool that allows you to manage asynchronous interactions between devices easily.
