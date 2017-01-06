@@ -86,7 +86,7 @@ function get_me(meDb, args) {
   // become clause
   if (isDefined(args.become)) {
     meDb.update(new_me);
-    console.log("Became... " + JSON.stringify(new_me));
+    console.log("Becomming... " + JSON.stringify(new_me));
   }
 
   return new_me;

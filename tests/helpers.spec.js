@@ -150,13 +150,69 @@ describe('helpers', function() {
 
     it('returns defaults from state if no db returns no data', function() {
       localdbSpoof.get = function() { return {}; };
-      var me  = helpers.get_me(localdbSpoof,{});
+      var me = helpers.get_me(localdbSpoof,{});
       assert.match(me.name, /friend*/, 'matches name generation default');
       assert.match(me.crowd, /crowd*/, 'matches crowd name generation default');
       assert.equal(me.role, 'friend');
       assert.equal(me.address, 'localhost:8686');
     });
     
+    it('masks passed args over defaults and "me" data', function() {
+      function Friend() {
+        this.name = 'friend2';
+        this.address = 'localhost:8888';
+        this.role = 'popular';
+        this.crowd = 'testcrowd2';
+        this.config = {};
+      }
+      var exp_friend = new Friend();
+
+      localdbSpoof.get = function() {
+        return {
+          name: 'friend1',
+          role: 'friend',
+          crowd: 'testcrowd',
+          address: 'localhost:8787',
+        };
+      }
+
+      var spoofArgs = {
+        name: 'friend2',
+        role: 'popular',
+        crowd: 'testcrowd2',
+        address: 'localhost:8888',
+      };
+
+      var me = helpers.get_me(localdbSpoof, spoofArgs);
+      assert.equal(JSON.stringify(exp_friend), JSON.stringify(me));
+    });
+
+/*
+    // there is currently no way of knowing via the function as-is
+    // to detect if it actually successfully updated or not...
+
+    it('args.become will force an update', function() {
+      localdbSpoof.get = function() {
+        return {
+          name: 'friend1',
+          role: 'friend',
+          crowd: 'testcrowd',
+          address: 'localhost:8787',
+        };
+      }
+      var datastore = null;
+      var spoofArgs = {
+        name: 'friend2',
+        role: 'popular',
+        crowd: 'testcrowd2',
+        address: 'localhost:8888',
+      }
+
+      var me = helpers.get_me(localdbSpoof, spoofArgs);
+
+      console.log(datastore);
+    }); 
+*/
   });
 });
 
