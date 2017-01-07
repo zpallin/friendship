@@ -90,9 +90,13 @@ class Flags {
 		);
 
 		// if the argv for to_address is not set, then assume "me"
-		if (!process.argv[3] || process.argv[3][0] == "-") {
+    // we detect if the 4th index is not available
+    // or if the first character is an empty string or beginning of a flag
+    // from this we can assume that there wasn't a to_address mentioned
+		if (!process.argv[3] || process.argv[3][0] in [" ", "-"]) {
 
-			// by splicing argv
+			// so we splice "me" into it, which will further be interpreted as
+      // whatever the friend's most "obvious" address is
 			process.argv.splice(3, 0, "me");
 		}
 
@@ -121,13 +125,14 @@ class Flags {
 		return parser;
 	}
 	
-	static get_args(cli_args) {
+	static get_args() {
 
+    // look for the command that comes after "friendship" call
+    // by default it's the argument that comes after the friendship call
+    // at this point, we prepare to make this more dynamic
+    // but it doesn't seem like there is any need for dynamic placement
+    // placement checking...
 		var action = process.argv[2];
-
-		if (typeof cli_args !== 'undefined') {
-			action = cli_args[0];
-		}
 
 		var parser = new ArgumentParser({
 			version: "0.0.1",
@@ -181,10 +186,7 @@ class Flags {
 				);
 		}
 
-		if (typeof cli_args === 'undefined') {
-			return parser.parseArgs();
-		}	
-		return parser.parseArgs(cli_args);
+    return parser.parseArgs();
 	}
 }
 
@@ -193,3 +195,4 @@ module.exports = {
 	Flags: Flags,
   help_sections: help_sections,
 }
+

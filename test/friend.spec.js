@@ -8,7 +8,7 @@ function Friend() {
   this.address = undefined;
   this.role = undefined;
   this.crowd = undefined;
-  this.config = {};
+  this.config = friend.Friend.default_config();
 }
 
 // testing the friend object
@@ -26,7 +26,7 @@ describe('Friend object', function() {
     friend_exp.address = 'localhost:8686';
     friend_exp.role = 'friend';
     friend_exp.crowd = 'crowd1';
-    friend_exp.config = {}; // right now there are no config, so will be empty
+    friend_exp.config = friend.Friend.default_config();
 
     // use same generation data as the expected output
     var test_friend = new friend.Friend(
@@ -38,6 +38,63 @@ describe('Friend object', function() {
     );
 
     assert.equal(JSON.stringify(test_friend), JSON.stringify(friend_exp));
+  });
+
+  it('only accepts config keys that are declared within object', function() {
+    var config_value = {fakekey: 'key that doesn\'t exist'};
+    var test_friend = new friend.Friend(
+      'friend1', 
+      '8686', 
+      'friend', 
+      'crowd1',
+      config_value
+    );
+
+    assert.equal(
+      JSON.stringify(test_friend.config), 
+      JSON.stringify(friend.Friend.default_config())
+    );
+    assert.notEqual(
+      JSON.stringify(test_friend.config),
+      JSON.stringify(config_value)
+    );
+
+    config_value = {kill:true};
+    var test_friend = new friend.Friend(
+      'friend1',
+      '8686',
+      'friend',
+      'crowd1',
+      config_value
+    );
+
+    assert.notEqual(
+      JSON.stringify(test_friend.config), 
+      JSON.stringify(friend.Friend.default_config())
+    );
+    assert.equal(
+      JSON.stringify(test_friend.config),
+      JSON.stringify(config_value)
+    );
+
+  });
+
+
+  it('can update config values', function() {
+    var config_value = {kill: true};
+    var test_friend = new friend.Friend(
+      'friend1', 
+      '8686', 
+      'friend', 
+      'crowd1',
+      config_value
+    );
+    
+    test_friend.update_config(config_value);
+    assert.equal(
+      JSON.stringify(test_friend.config),
+      JSON.stringify(config_value)
+    );
   });
 
   it('can get just the core data', function() {
@@ -64,7 +121,7 @@ describe('Friend object', function() {
       address: 'localhost:8686',
       role: 'friend',
       crowd: 'crowd1',
-      config: {},
+      config: friend.Friend.default_config(),
     };
     var test_friend = new friend.Friend(
       exp_obj.name,

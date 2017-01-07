@@ -14,8 +14,20 @@ class Friend {
     this.crowd = crowd;
     
     // unshared config values
-    this.config = {};
+    this.config = Friend.default_config();
+    
+    this._set_config(config);
+  }
 
+  static default_config() {
+    //returns default configurations, which subsequently limit
+    //which configurations can be passed via input filtering
+    return {
+      kill: false,
+    }
+  }
+
+  _set_config(config) {
     // set config if config is declared and is an object
     if (typeof config === 'object') {
       for (var c in config) {
@@ -26,10 +38,8 @@ class Friend {
     }
   }
 
-  _default_config() {
-    //returns default configurations, which subsequently limit
-    //which configurations can be passed via input filtering
-    return {} // empty for now :(
+  update_config(config) {
+    this._set_config(config);
   }
 
   get data() {

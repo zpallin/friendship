@@ -1,5 +1,6 @@
 'use strict';
 
+const friend = require('../friendship/friend.js');
 const helpers = require('../friendship/helpers.js');
 const assert = require('chai').assert;
 const proxyquire = require('proxyquire');
@@ -112,7 +113,7 @@ describe('helpers', function() {
         this.address = undefined;
         this.role = undefined;
         this.crowd = undefined;
-        this.config = {};
+        this.config = friend.Friend.default_config();
       }
       var me = helpers.get_me();
       assert.equal(JSON.stringify(new Friend()), JSON.stringify(me));
@@ -131,7 +132,7 @@ describe('helpers', function() {
         this.address = 'localhost:8686';
         this.role = 'friend';
         this.crowd = 'testcrowd';
-        this.config = {};
+        this.config = friend.Friend.default_config();
       }
 
       localdbSpoof.get = function() {
@@ -163,7 +164,7 @@ describe('helpers', function() {
         this.address = 'localhost:8888';
         this.role = 'popular';
         this.crowd = 'testcrowd2';
-        this.config = {};
+        this.config = friend.Friend.default_config();
       }
       var exp_friend = new Friend();
 
