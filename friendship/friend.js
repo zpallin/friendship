@@ -1,3 +1,7 @@
+'use strict';
+
+var state = require('./state.js');
+
 ////////////////////////////////////////////////////////////////////////////////
 /*
  * Friend
@@ -14,17 +18,9 @@ class Friend {
     this.crowd = crowd;
     
     // unshared config values
-    this.config = Friend.default_config();
+    this.config = state.defaults.friend_config();
     
     this._set_config(config);
-  }
-
-  static default_config() {
-    //returns default configurations, which subsequently limit
-    //which configurations can be passed via input filtering
-    return {
-      kill: false,
-    }
   }
 
   _set_config(config) {

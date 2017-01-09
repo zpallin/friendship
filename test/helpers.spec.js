@@ -1,10 +1,10 @@
 'use strict';
 
-const friend = require('../friendship/friend.js');
-const helpers = require('../friendship/helpers.js');
-const assert = require('chai').assert;
-const proxyquire = require('proxyquire');
-
+var friend = require('../friendship/friend.js');
+var helpers = require('../friendship/helpers.js');
+var state = require('../friendship/state.js');
+var assert = require('chai').assert;
+var proxyquire = require('proxyquire');
 ////////////////////////////////////////////////////////////////////////////////
 
 describe('helpers', function() {
@@ -17,6 +17,12 @@ describe('helpers', function() {
 
       assert.equal(obj1, obj2); // these are the same
       assert.notEqual(obj1, obj3); // as a clone, it's different! :D
+    });
+
+    it('returns empty object if undefined', function() {
+      var obj1 = undefined;
+      var obj2 = helpers.clone(obj1);
+      assert.equal(JSON.stringify({}), JSON.stringify(obj2));
     });
   });
 
@@ -85,7 +91,7 @@ describe('helpers', function() {
       assert.equal(exp_addr.port, addr.port);
 
       addr = helpers.addr_from_string('test:');
-    
+
       assert.equal(exp_addr.host, addr.host);
       assert.equal(exp_addr.port, addr.port);
     });
@@ -98,11 +104,18 @@ describe('helpers', function() {
       var addr = helpers.addr_from_string('8787');
       assert.equal(exp_addr.host, addr.host);
       assert.equal(exp_addr.port, addr.port);
-  
+
       addr = helpers.addr_from_string(':8787');
       assert.equal(exp_addr.host, addr.host);
       assert.equal(exp_addr.port, addr.port);
 
+    });
+
+    it('returns default addr if no passed value was defined', function() {
+      var exp_addr = state.defaults.address.split(':');
+      var addr = helpers.addr_from_string();
+      assert.equal(addr.host, exp_addr[0]);
+      assert.equal(addr.port, exp_addr[1]);
     });
   });
 
@@ -113,26 +126,26 @@ describe('helpers', function() {
         this.address = undefined;
         this.role = undefined;
         this.crowd = undefined;
-        this.config = friend.Friend.default_config();
+        this.config = state.defaults.friend_config();
       }
       var me = helpers.get_me();
       assert.equal(JSON.stringify(new Friend()), JSON.stringify(me));
     });
-    
+
     // localdb spoofing for other tests...
     var localdbSpoof = {};
     localdbSpoof.get = function() { return {}; }
     localdbSpoof.update = function(data) {
       // nothing?
     }
- 
+
     it('returns the data from the db as a Friend object', function() {
       function Friend() {
         this.name = 'friend1';
         this.address = 'localhost:8686';
         this.role = 'friend';
         this.crowd = 'testcrowd';
-        this.config = friend.Friend.default_config();
+        this.config = state.defaults.friend_config();
       }
 
       localdbSpoof.get = function() {
@@ -141,6 +154,7 @@ describe('helpers', function() {
           role: 'friend',
           crowd: 'testcrowd',
           address: 'localhost:8686',
+          config: state.defaults.friend_config(),
         };
       };
 
@@ -157,14 +171,14 @@ describe('helpers', function() {
       assert.equal(me.role, 'friend');
       assert.equal(me.address, 'localhost:8686');
     });
-    
+
     it('masks passed args over defaults and "me" data', function() {
       function Friend() {
         this.name = 'friend2';
         this.address = 'localhost:8888';
         this.role = 'popular';
         this.crowd = 'testcrowd2';
-        this.config = friend.Friend.default_config();
+        this.config = state.defaults.friend_config();
       }
       var exp_friend = new Friend();
 
@@ -174,6 +188,7 @@ describe('helpers', function() {
           role: 'friend',
           crowd: 'testcrowd',
           address: 'localhost:8787',
+          config: state.defaults.friend_config(),
         };
       }
 
@@ -188,7 +203,6 @@ describe('helpers', function() {
       assert.equal(JSON.stringify(exp_friend), JSON.stringify(me));
     });
 
-/*
     // there is currently no way of knowing via the function as-is
     // to detect if it actually successfully updated or not...
 
@@ -201,19 +215,100 @@ describe('helpers', function() {
           address: 'localhost:8787',
         };
       }
-      var datastore = null;
+      var updated = null;
+      localdbSpoof.update = function(value) {
+        updated = value;
+      }
       var spoofArgs = {
         name: 'friend2',
         role: 'popular',
         crowd: 'testcrowd2',
         address: 'localhost:8888',
+        become: 'become',
       }
 
       var me = helpers.get_me(localdbSpoof, spoofArgs);
 
-      console.log(datastore);
+      assert.equal(JSON.stringify(me), JSON.stringify(updated));
+      assert.notEqual(updated, null); // because we originally set it to null
     }); 
-*/
+
+    it('parses string of configs into "me" object', function() {
+      var original_me = {
+        name: 'friend2',
+        role: 'popular',
+        crowd: 'testcrowd2',
+        address: 'localhost:8888',
+        config: {kill:false},
+      }
+      localdbSpoof.get = function(value) {
+        return original_me;
+      }
+
+      var spoofArgs = {
+        name: 'friend2',
+        role: 'popular',
+        crowd: 'testcrowd2',
+        address: 'localhost:8888',
+        local_config: 'fakeconfig:value,kill:true',
+      }
+
+      var me = helpers.get_me(localdbSpoof, spoofArgs);
+      assert.equal(JSON.stringify({kill: true}), JSON.stringify(me.config));
+      assert.notEqual(JSON.stringify(original_me.config), JSON.stringify(me.config));
+    });
+
+    it('converts booleans and numbers passed via config', function() {
+
+      var stateStub = {};
+      var friend = proxyquire(
+        '../friendship/friend.js',
+        { './state.js': stateStub }
+      );
+
+      var helpers = proxyquire(
+        '../friendship/helpers.js', 
+        { 
+          './friend.js' : friend,
+          './state.js': stateStub,
+        }
+      );
+
+      stateStub.defaults = {};
+      stateStub.defaults.friend_config = function() {
+        return {
+          num: 0,
+          boolean: true,
+          otherboo: false,
+          string: 'string',
+          kill: false,
+        };
+      };
+
+      var original_me = {
+        name: 'friend2',
+        role: 'popular',
+        crowd: 'testcrowd2',
+        address: 'localhost:8888',
+        config: stateStub.defaults.friend_config(),
+      }
+
+      localdbSpoof.get = function(value) {
+        return original_me;
+      }
+
+      var spoofArgs = {
+        local_config : 'num:11,boolean:false,otherboo:true,string:dude,kill:true'
+      };
+      var me = helpers.get_me(localdbSpoof, {});
+      assert.equal(JSON.stringify(me.config), JSON.stringify(stateStub.defaults.friend_config()));
+      var me = helpers.get_me(localdbSpoof, spoofArgs);
+      assert.notEqual(JSON.stringify(me.config), JSON.stringify(stateStub.defaults.friend_config()));
+      assert.equal(
+        JSON.stringify({num:11,boolean:false,otherboo:true,string:'dude',kill:true}),
+        JSON.stringify(me.config)
+      );
+    });
   });
 });
 

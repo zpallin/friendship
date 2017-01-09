@@ -14,6 +14,11 @@
 var defaults = {
   address : 'localhost:8686',
   role : 'friend',
+  friend_config : function() {
+    return {
+      kill: false,
+    };
+  }
 }
 
 module.exports = {

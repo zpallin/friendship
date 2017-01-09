@@ -1,8 +1,8 @@
 'use strict';
 
-var sha1 = require('sha1');
-var state = require('./state.js');
-var Friend = require('./friend.js').Friend;
+const sha1 = require('sha1');
+const state = require('./state.js');
+const friend = require('./friend.js');
 
 ////////////////////////////////////////////////////////////////////////////////
 /* 
@@ -11,6 +11,9 @@ var Friend = require('./friend.js').Friend;
  */
 
 function clone(obj) {
+  if (typeof obj === 'undefined') {
+    return {};
+  }
   return JSON.parse(JSON.stringify(obj));
 }
 
@@ -31,7 +34,7 @@ function get_me(meDb, args) {
 
   // if no db is supplied, just return an empty friend
   if (!isDefined(meDb)) {
-    return new Friend();
+    return new friend.Friend();
   }
 
   // shadow over
@@ -65,28 +68,55 @@ function get_me(meDb, args) {
   // now for local_config. We must loop through passed config arguments
   // since config defaults are handled inside of the friend object
   // we don't have to worry about them
-  var local_configs = me.config;
+  //
+  // start with obtaining the current configs stored in "me"
+  var curr_configs = me.config;
+  var new_configs = clone(curr_configs);
+  ////console.log('newconfigs: ' + JSON.stringify(new_configs));
+  
+  // we can overwrite configs if we know that local_config is defined
   if (args.local_config !== undefined && args.local_config !== null) {
 
-    // for ergonomics, this little map parses a string of k:v's into an array
-    // of k:v objects 
-    var configs = args.local_config.split(',').map(function(x) {
-      var y = x.split(':');
-      return { k: y[0], v: y[1] };
-    });
+    // store passed configs 
+    var passed_configs = {};
+    for (var c of args.local_config.split(',')) {
+      var config = c.split(':');
+      passed_configs[config[0]] = config[1];
+    }
 
-    for (var c in configs) {
-      var conf = configs[c];
-      local_configs[conf.k] = conf.v;
+    for (var c in curr_configs) {
+      var passed_c = curr_configs[c];
+      if (c in passed_configs) {
+
+        passed_c = passed_configs[c];
+        // parse for boolean and num
+        switch(passed_c) {
+          case "true": 
+            passed_c = true;
+            break;
+          case "false":
+            passed_c = false;
+            break;
+          default:
+            if (!isNaN(passed_c)) {
+              passed_c = parseInt(passed_c);
+            }
+        }
+      }
+      new_configs[c] = passed_c;
     }
   }
-  
-  var new_me = new Friend(name, address, role, crowd, local_configs);
+ 
+  // generate new me 
+  ////console.log('defconfigs: ' + JSON.stringify(state.defaults.friend_config()));
+  var new_me = new friend.Friend(name, address, role, crowd, new_configs);
 
   // become clause
   if (isDefined(args.become)) {
     meDb.update(new_me);
-    console.log("Becomming... " + JSON.stringify(new_me));
+    if (process.env.NODE_ENV !== 'test') {
+      console.log("Becomming... " + JSON.stringify(new_me));
+    }
   }
 
   return new_me;

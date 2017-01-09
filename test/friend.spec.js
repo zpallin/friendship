@@ -1,4 +1,7 @@
+'use strict';
+
 const friend = require('../friendship/friend.js');
+const state = require('../friendship/state.js');
 const assert = require('chai').assert;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -8,7 +11,7 @@ function Friend() {
   this.address = undefined;
   this.role = undefined;
   this.crowd = undefined;
-  this.config = friend.Friend.default_config();
+  this.config = state.defaults.friend_config();
 }
 
 // testing the friend object
@@ -26,7 +29,7 @@ describe('Friend object', function() {
     friend_exp.address = 'localhost:8686';
     friend_exp.role = 'friend';
     friend_exp.crowd = 'crowd1';
-    friend_exp.config = friend.Friend.default_config();
+    friend_exp.config = state.defaults.friend_config();
 
     // use same generation data as the expected output
     var test_friend = new friend.Friend(
@@ -52,7 +55,7 @@ describe('Friend object', function() {
 
     assert.equal(
       JSON.stringify(test_friend.config), 
-      JSON.stringify(friend.Friend.default_config())
+      JSON.stringify(state.defaults.friend_config())
     );
     assert.notEqual(
       JSON.stringify(test_friend.config),
@@ -67,10 +70,10 @@ describe('Friend object', function() {
       'crowd1',
       config_value
     );
-
+    
     assert.notEqual(
       JSON.stringify(test_friend.config), 
-      JSON.stringify(friend.Friend.default_config())
+      JSON.stringify(state.defaults.friend_config())
     );
     assert.equal(
       JSON.stringify(test_friend.config),
@@ -121,7 +124,7 @@ describe('Friend object', function() {
       address: 'localhost:8686',
       role: 'friend',
       crowd: 'crowd1',
-      config: friend.Friend.default_config(),
+      config: state.defaults.friend_config(),
     };
     var test_friend = new friend.Friend(
       exp_obj.name,
