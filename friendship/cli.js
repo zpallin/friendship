@@ -93,7 +93,7 @@ class Flags {
     // we detect if the 4th index is not available
     // or if the first character is an empty string or beginning of a flag
     // from this we can assume that there wasn't a to_address mentioned
-		if (!process.argv[3] || process.argv[3][0] in [" ", "-"]) {
+		if (!process.argv[3] || String(process.argv[3]).substr(0,1) === "-") {
 
 			// so we splice "me" into it, which will further be interpreted as
       // whatever the friend's most "obvious" address is

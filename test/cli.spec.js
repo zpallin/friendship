@@ -151,9 +151,13 @@ describe('Flags.get_args()', function () {
 
       var args_exp = new Namespace();
       process.argv = ['node', 'friendship', 'listen'];
-
       var args = cli.Flags.get_args();
       assert.equal(args.to_address, 'me');
+
+      process.argv = ['node', 'friendship', 'listen', '-p', 'config'];
+      var args = cli.Flags.get_args();
+      assert.equal(args.to_address, 'me');
+
     });
   });
 
