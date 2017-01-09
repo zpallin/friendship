@@ -1,6 +1,6 @@
 {
   "name": "friendship",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Distributed Systems Manager",
   "main": "friendship.js",
   "scripts": {
