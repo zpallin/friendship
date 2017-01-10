@@ -56,9 +56,26 @@ function main() {
     /*
      * entrypoint for running tell arguments
      */
+
+    // first, find out if the target should be translated to an address.
+    var target_address = args.target_friend; // the default
+
+    // loop through phonebook friends and check
+    for (var f of phonebook.get().friends) {
+      if (f.name === target_address) {
+        target_address = f.address;
+        break;
+      }
+    }
+
+    // check if the node name is myself? assign addr accordingly
+    if (target_address === me.name) {
+      target_address = me.address;
+    }
+
     if (args.to_do === "hello") {
 
-      var addr = helpers.addr_from_string(args.target_friend);
+      var addr = helpers.addr_from_string(target_address);
       var sendData = JSON.stringify(me.data);
 
       sa.post(addr.host + ":" + addr.port + "/hello")
