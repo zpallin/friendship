@@ -24,7 +24,7 @@ fsStub.writeFileSync = function(path, data, ...options) {
 var pathStub = {};
 
 // localdb proxyquired
-var localdb = proxyquire(
+var reallocaldb = proxyquire(
   '../friendship/localdb.js', 
   {
     'fs': fsStub,
@@ -43,13 +43,13 @@ function LocalDB() {
 ////////////////////////////////////////////////////////////////////////////////
 describe('LocalDB object', function() {
   it('can be instantiated with defaults', function() {
-    var db = new localdb.LocalDB();
+    var db = new reallocaldb();
     var expected_db = new LocalDB();
     assert.equal(JSON.stringify(db), JSON.stringify(expected_db));
   });
 
   it('can be instantiated with other values', function() {
-    var db = new localdb.LocalDB('testdb', './test_path', true);
+    var db = new reallocaldb('testdb', './test_path', true);
     var expected_db = new LocalDB();
     expected_db.name = "testdb";
     expected_db.filepath = './test_path';
@@ -59,7 +59,7 @@ describe('LocalDB object', function() {
   });
   
   it('can update', function() {
-    var db = new localdb.LocalDB();
+    var db = new reallocaldb();
     var expected_db = new LocalDB();
     var expected_output = {
       path: expected_db.fullpath,
@@ -71,7 +71,7 @@ describe('LocalDB object', function() {
   });
 
   it('can retrieve data with "get"', function() {
-    var db = new localdb.LocalDB();
+    var db = new reallocaldb();
     var expected_db = new LocalDB();
     var expected_output = JSON.stringify({ test: 'value' }); 
     assert.equal(JSON.stringify(db.get()), expected_output);

@@ -61,9 +61,9 @@ function get_me(meDb, args) {
 
   var address = state.defaults.address;
   address = isDefined(me.address) ? me.address : address;
-  address = isDefined(args.address) ? args.address : address;
   address = isDefined(args.to_address) ? args.to_address : address;
   address = address === "me" ? me.address : address;
+  address = isDefined(args.address) ? args.address : address;
 
   // now for local_config. We must loop through passed config arguments
   // since config defaults are handled inside of the friend object

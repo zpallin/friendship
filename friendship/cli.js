@@ -16,6 +16,7 @@ var help_sections = {
   "become": "overwrites local configuration with masking flags",
   "config": "displays all local configuration on stdout",
   "actions": "displays help text for all actions on stdout",
+  "greet": "joins current friend to target friend's crowd",
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -103,6 +104,22 @@ class Flags {
 		return parser;
 	}
 
+  static greet(parser) {
+		parser.addArgument("greet",
+			{
+				help: help_sections['greet'],
+			}
+		);
+		parser.addArgument("target_friend",
+			{
+				help: "target for the action [<host or address>]",
+				required: false,
+			}
+		);
+
+    return parser;
+  }
+
 	static tell(parser) {
 		// return flags for tell action
 		parser.addArgument("tell",
@@ -152,6 +169,10 @@ class Flags {
 			case "tell":
 				parser = Flags.tell(parser);
 				break;
+
+      case "greet":
+        parser = Flags.greet(parser);
+        break;
 
 			case "become":
 				parser.addArgument("become",

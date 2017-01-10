@@ -12,7 +12,8 @@ app.use(bodyParser.json());
 
 // locals
 var Friend = require('./friendship/friend.js').Friend;
-var LocalDB = require('./friendship/localdb.js').LocalDB;
+var LocalDB = require('./friendship/localdb.js');
+var Phonebook = require('./friendship/phonebook.js');
 var cli = require('./friendship/cli.js');
 var state = require('./friendship/state.js');
 var helpers = require('./friendship/helpers.js');
@@ -32,7 +33,7 @@ function main() {
   var args = cli.get_args();
   var path = args.path === null ? "./" : args.path;
   var meDb = new LocalDB("me", path);
-  var phonebook = new LocalDB("phonebook", path);
+  var phonebook = new Phonebook(path);
   var me = helpers.get_me(meDb, args);
 
   // print out configuration
@@ -51,7 +52,7 @@ function main() {
     console.log("\nRun \"--help\" with each action to learn more");
   }
 
-  if (helpers.isDefined(args.tell)) {
+  if (helpers.isDefined(args.greet)) {
 
     /*
      * entrypoint for running tell arguments
@@ -60,34 +61,27 @@ function main() {
     // first, find out if the target should be translated to an address.
     var target_address = args.target_friend; // the default
 
-    // loop through phonebook friends and check
-    for (var f of phonebook.get().friends) {
-      if (f.name === target_address) {
-        target_address = f.address;
-        break;
-      }
-    }
-
     // check if the node name is myself? assign addr accordingly
     if (target_address === me.name) {
       target_address = me.address;
+ 
+    // loop through phonebook friends and check
+    } else {
+      target_address = phonebook.addr_by_name_or_return(target_address);
     }
 
-    if (args.to_do === "hello") {
+    var addr = helpers.addr_from_string(target_address);
+    var sendData = JSON.stringify(me.data);
 
-      var addr = helpers.addr_from_string(target_address);
-      var sendData = JSON.stringify(me.data);
-
-      sa.post(addr.host + ":" + addr.port + "/hello")
-        .send(me.data)
-        .end(function(err, res) {
-          if (err !== null) {
-            console.log(err);
-          } else {
-            console.log(res.body);
-          }
-        });
-    } 
+    sa.post(addr.host + ":" + addr.port + "/greet")
+      .send(me.data)
+      .end(function(err, res) {
+        if (err !== null) {
+          console.log(err);
+        } else {
+          console.log(res.body);
+        }
+      });
   }
 
   //if (args.hasOwnProperty("action") &&
@@ -101,7 +95,7 @@ function main() {
     // how to greet a node. It tells you who it is!
     // I mean, why not? It's early stage development. 
     // pffft... No need for security!
-    app.post('/hello', function(req, res) {
+    app.post('/greet', function(req, res) {
 
       var data = me.data;
       data.message = "Hello! This is me!";

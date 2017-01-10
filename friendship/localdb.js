@@ -44,6 +44,4 @@ class LocalDB {
   }
 }
 
-module.exports = {
-	LocalDB: LocalDB
-}
+module.exports = LocalDB;
