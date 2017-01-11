@@ -11,8 +11,8 @@ var DEFAULT_ADDRESS = state.defaults.address;
  */
 
 var help_sections = {
-  "listen": "listens as service to <address | host> for friends",
-  "tell": "gives a command to a target friend <name | group | address>",
+  "listen": "listens as service to <address, host> for friends",
+  "tell": "gives a command to a target friend <name, address>",
   "become": "overwrites local configuration with masking flags",
   "config": "displays all local configuration on stdout",
   "actions": "displays help text for all actions on stdout",

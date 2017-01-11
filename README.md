@@ -25,6 +25,21 @@ That's it so far! :/
 
 # Features
 
+## Actions
+
+From the command line a user can execute a number of commands against the friendship tool, including executing it as a server to listen for other servers!
+
+### Actions List
+
+| Title    | Description                                        | Works? |
+| -------- | -------------------------------------------------- | ------ |
+| listen   | listens as service to <address | host> for friends | yes    |
+| tell     | gives a command to a target friend <name, address> | yes    |
+| become   | overwrites local configuration with masking flags  | yes    |
+| config   | displays all local configuration on stdout         | yes    |
+| actions  | displays help text for all actions on stdout       | yes    |
+| greet    | joins current friend to target friend's crowd      | yes    |
+
 ## Roles
 
 Roles are how we know friends are supposed to interact with one another.
