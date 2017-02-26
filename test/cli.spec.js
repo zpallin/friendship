@@ -1,7 +1,9 @@
 const cli = require('../friendship/cli.js');
 const assert = require('chai').assert;
 
-function GENERIC_ARG_TEST(cmd) {
+function GENERIC_ARG_TEST(cmd, cmdVal) {
+  cmdVal = cmdVal === undefined? cmd : cmdVal;
+
   it('compiles flag arguments when they are present or not present', function () {
     function Namespace() {
       this.name = null;
@@ -10,7 +12,7 @@ function GENERIC_ARG_TEST(cmd) {
       this.crowd = null;
       this.local_config = null;
       this.path = null;
-      this[cmd] = cmd;
+      this[cmdVal] = cmd;
     }
     
     process.argv = ['node', 'friendship', cmd];
@@ -25,7 +27,7 @@ function GENERIC_ARG_TEST(cmd) {
     args_exp.crowd = 'crowd1';
     args_exp.local_config = 'test:config';
     args_exp.path = './';
-    args_exp[cmd] = cmd;
+    args_exp[cmdVal] = cmd;
 
     process.argv = [
       'node',
@@ -174,7 +176,7 @@ describe('Flags.get_args()', function () {
   });
 
   describe('action', function() {
-    GENERIC_ARG_TEST('action');
+    GENERIC_ARG_TEST('action', 'actions');
   });
 
   process.argv = original_process_argv;
