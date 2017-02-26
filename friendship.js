@@ -3,10 +3,7 @@
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const http = require('http');
-const sa = require('superagent');
 const app = express();
-const exec = require('child_process').exec;
 
 // app uses
 app.use(bodyParser.json());

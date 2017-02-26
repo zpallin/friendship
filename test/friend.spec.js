@@ -62,7 +62,7 @@ describe('Friend object', function() {
       JSON.stringify(config_value)
     );
 
-    config_value = {kill:true};
+    config_value = {kill:true, accept_secrets: true};
     var test_friend = new friend.Friend(
       'friend1',
       '8686',
@@ -84,7 +84,7 @@ describe('Friend object', function() {
 
 
   it('can update config values', function() {
-    var config_value = {kill: true};
+    var config_value = {kill: true, accept_secrets: true};
     var test_friend = new friend.Friend(
       'friend1', 
       '8686', 

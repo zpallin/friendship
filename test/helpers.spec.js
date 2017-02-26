@@ -239,7 +239,7 @@ describe('helpers', function() {
         role: 'popular',
         crowd: 'testcrowd2',
         address: 'localhost:8888',
-        config: {kill:false},
+        config: {kill:false, accept_secrets:true},
       }
       localdbSpoof.get = function(value) {
         return original_me;
@@ -254,7 +254,7 @@ describe('helpers', function() {
       }
 
       var me = helpers.get_me(localdbSpoof, spoofArgs);
-      assert.equal(JSON.stringify({kill: true}), JSON.stringify(me.config));
+      assert.equal(JSON.stringify({kill: true, accept_secrets:true}), JSON.stringify(me.config));
       assert.notEqual(JSON.stringify(original_me.config), JSON.stringify(me.config));
     });
 

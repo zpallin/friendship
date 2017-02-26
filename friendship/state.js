@@ -17,6 +17,7 @@ var defaults = {
   friend_config : function() {
     return {
       kill: false,
+      accept_secrets: true,
     };
   }
 }
