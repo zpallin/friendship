@@ -190,6 +190,8 @@ class Flags {
 				);
 				break;
 
+      // because typos?
+      case "action":
 			case "actions":
 				parser.addArgument("actions",
 					{

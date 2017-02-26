@@ -19,6 +19,7 @@
     "merge": "^1.2.0",
     "mocha": "^3.2.0",
     "node-json-db": "^0.7.3",
+    "node-xmpp": "^1.0.7",
     "proxyquire": "^1.7.10",
     "sha1": "^1.1.1",
     "sinon": "^1.17.7",
